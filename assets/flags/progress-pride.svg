@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 9 44 30" width="44" height="30" shape-rendering="geometricPrecision" role="img" aria-label="Progress Pride flag">
+  <rect x="2" y="9"  width="44" height="5" fill="#E40303"/>
+  <rect x="2" y="14" width="44" height="5" fill="#FF8C00"/>
+  <rect x="2" y="19" width="44" height="5" fill="#FFED00"/>
+  <rect x="2" y="24" width="44" height="5" fill="#008026"/>
+  <rect x="2" y="29" width="44" height="5" fill="#004CFF"/>
+  <rect x="2" y="34" width="44" height="5" fill="#732982"/>
+  <!-- Each chevron stripe is its own closed ring polygon — outer
+       perimeter then inner perimeter traced backwards. No painter's
+       stack, no overlap dependency, no rasterization seams under
+       transform (#99a v3). -->
+  <polygon points="2,9   24,24    2,39   2,36   19.60,24 2,12" fill="#000000"/>
+  <polygon points="2,12  19.60,24 2,36   2,33   15.21,24 2,15" fill="#613915"/>
+  <polygon points="2,15  15.21,24 2,33   2,30   10.81,24 2,18" fill="#5BCEFA"/>
+  <polygon points="2,18  10.81,24 2,30   2,27   6.41,24  2,21" fill="#F5A9B8"/>
+  <polygon points="2,21  6.41,24  2,27" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,23 @@
+/* Pride Flags — front-end shortcode styles */
+
+.pride-flag {
+	display: inline-block;
+	height: 1.25em;          /* scales with surrounding text by default */
+	width: auto;
+	vertical-align: -0.2em;  /* sit nicely on the text baseline */
+	border-radius: 2px;
+	margin: 0 0.15em;
+}
+
+/* A couple of handy utility classes callers can pass via class="" */
+.pride-flag.is-block {
+	display: block;
+	height: auto;
+	width: 100%;
+	max-width: 320px;
+	vertical-align: baseline;
+	margin: 0.5em 0;
+}
+
+.pride-flag.is-small { height: 1em; }
+.pride-flag.is-large { height: 2em; }
