@@ -2,7 +2,7 @@
 Contributors: carmynwilson
 Requires at least: 6.0
 Tested up to: 6.5
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 8.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -54,6 +54,9 @@ The default fallback flag is filterable too via `pride_flags_default_slug`.
 Flag artwork is bundled with the plugin (ported from the Violet Index identity-flag library).
 
 == Changelog ==
+
+= 1.1.1 - 2026-06-18 =
+* Clean re-release of the 1.1.x feature set (collections, collection builder, tooltips, flexible sizing, alignment). No functional changes from 1.1.0.
 
 = 1.1.0 - 2026-06-18 =
 * Collections: the `flag` attribute now accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
