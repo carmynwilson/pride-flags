@@ -62,5 +62,5 @@ $prideFlagsUpdateChecker = PucFactory::buildUpdateChecker(
 // Set the branch that contains the stable release.
 $prideFlagsUpdateChecker->setBranch( 'main' );
 
-// GitHub Personal Access Token (required while the repo is private).
-$prideFlagsUpdateChecker->setAuthentication( 'github_pat_xxxxxx' );
+// The repo is public, so PUC needs no authentication. If it ever goes
+// private again, add: $prideFlagsUpdateChecker->setAuthentication( 'TOKEN' );

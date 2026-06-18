@@ -62,8 +62,8 @@ function pride_flags_render_library_page() {
 			?>
 		</p>
 		<p class="pride-flags-intro pride-flags-intro--muted">
-			<?php esc_html_e( 'You can also add a CSS class or a pixel height:', 'pride-flags' ); ?>
-			<code>[pride flag=&quot;nonbinary&quot; class=&quot;my-class&quot; size=&quot;48&quot;]</code>
+			<?php esc_html_e( 'You can also add a CSS class or a size (a bare number is pixels, or use any unit like 2rem / 50%):', 'pride-flags' ); ?>
+			<code>[pride flag=&quot;nonbinary&quot; class=&quot;my-class&quot; size=&quot;2rem&quot;]</code>
 		</p>
 
 		<div class="pride-flags-builder" id="pride-flags-builder">

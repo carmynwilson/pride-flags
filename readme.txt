@@ -25,7 +25,7 @@ You can also render a collection by passing several slugs, comma-separated:
 
 * `flag` — one flag slug, or a comma-separated list for a collection (e.g. `trans`, or `trans,nonbinary,bi`). Defaults to `progress-pride`.
 * `class` — extra CSS class(es). Applied to the flag (single) or the wrapping row (collection).
-* `size` — optional rendered height in pixels (e.g. `48`).
+* `size` — optional rendered height. A bare number is treated as pixels (`48`), or pass any CSS unit (`2rem`, `1.5em`, `50%`, `3vh`).
 * `label` — override the alt/title text on a single flag (defaults to "{Flag} pride flag").
 
 **Library + collection builder**
@@ -56,6 +56,7 @@ Flag artwork is bundled with the plugin (ported from the Violet Index identity-f
 = 1.1.0 - 2026-06-18 =
 * Collections: the `flag` attribute now accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
 * Added a point-and-click collection builder to the dashboard library: add flags, see chips, copy one combined shortcode.
+* `size` now accepts any CSS unit (`2rem`, `1.5em`, `50%`, `3vh`); a bare number still means pixels.
 * Reworded all flag descriptions for a more human voice, grounded against public pride-flag references.
 
 = 1.0.0 - 2026-06-18 =
