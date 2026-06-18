@@ -2,7 +2,7 @@
 Contributors: carmynwilson
 Requires at least: 6.0
 Tested up to: 6.5
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Requires PHP: 8.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -53,11 +53,15 @@ Flag artwork is bundled with the plugin (ported from the Violet Index identity-f
 
 == Changelog ==
 
+= 1.1.0 - 2026-06-18 =
+* Collections: the `flag` attribute now accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
+* Added a point-and-click collection builder to the dashboard library: add flags, see chips, copy one combined shortcode.
+* Reworded all flag descriptions for a more human voice, grounded against public pride-flag references.
+
 = 1.0.0 - 2026-06-18 =
 * Initial build.
 * `[pride flag="…"]` shortcode with `class`, `size`, and `label` attributes; defaults to Progress Pride.
-* Collections: `flag` accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
 * 26 bundled flags (Progress Pride, Trans, and the full Violet Index identity-flag set).
-* Searchable dashboard library with copy-to-clipboard shortcodes and a point-and-click collection builder.
+* Searchable dashboard library with copy-to-clipboard shortcodes.
 * Filterable registry (`pride_flags_registry`, `pride_flags_default_slug`).
 * GitHub updates via Plugin Update Checker.

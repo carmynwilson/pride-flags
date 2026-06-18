@@ -8,7 +8,7 @@
  *
  * @wordpress-plugin
  * Plugin Name: Pride Flags
- * Version:     1.0.0
+ * Version:     1.1.0
  * Plugin URI:  https://carmyn.me/?pride-flags
  * Description: A simple [pride flag=""] shortcode that renders pride & identity flags. Defaults to the Progress Pride flag. Includes a built-in flag library reference in the dashboard.
  * Author:      Carmyn Wilson
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define constants
-define( 'PRIDE_FLAGS_VERSION', '1.0.0' );
+define( 'PRIDE_FLAGS_VERSION', '1.1.0' );
 define( 'PRIDE_FLAGS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PRIDE_FLAGS_URL', plugin_dir_url( __FILE__ ) );
 
