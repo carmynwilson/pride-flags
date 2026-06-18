@@ -21,3 +21,19 @@
 
 .pride-flag.is-small { height: 1em; }
 .pride-flag.is-large { height: 2em; }
+
+/* Collection wrapper: [pride flag="a,b,c"] renders a row of flags */
+.pride-flags {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	vertical-align: -0.2em;
+}
+.pride-flags .pride-flag {
+	margin: 0;            /* the wrapper's gap handles spacing */
+	vertical-align: baseline;
+}
+.pride-flags.is-block {
+	display: flex;
+	flex-wrap: wrap;
+}

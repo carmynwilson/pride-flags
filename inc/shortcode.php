@@ -3,13 +3,15 @@
  * Pride Flags — [pride] shortcode
  *
  * Usage:
- *   [pride]                              → Progress Pride (default)
- *   [pride flag="trans"]                 → Trans flag
- *   [pride flag="nonbinary" class="big"] → Nonbinary flag with an extra class
- *   [pride flag="bi" size="48"]          → set the rendered height in px
+ *   [pride]                                 → Progress Pride (default)
+ *   [pride flag="trans"]                    → Trans flag
+ *   [pride flag="trans,nonbinary,bi"]       → a row of flags (a "collection")
+ *   [pride flag="nonbinary" class="big"]    → extra CSS class
+ *   [pride flag="bi" size="48"]             → set rendered height in px
  *
- * Any unknown or empty flag falls back to the default (Progress Pride),
- * so the shortcode never renders nothing.
+ * The flag attribute takes one slug or a comma-separated list. Unknown
+ * slugs are dropped; if nothing valid is left, it falls back to the
+ * default flag (Progress Pride) so the shortcode never renders nothing.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,61 +19,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Render a single flag image.
+ * Render a single <img> for one flag.
  *
- * @param array  $atts    Shortcode attributes.
- * @param string $content Unused.
- * @return string HTML.
+ * @param string $slug          Flag slug.
+ * @param array  $flag          Registry entry.
+ * @param int    $size          Height in px (0 = use CSS default).
+ * @param array  $extra_classes Extra CSS classes for the img.
+ * @param string $label         alt/title override (empty = "{Label} pride flag").
+ * @return string HTML, or '' if the image can't be resolved.
  */
-function pride_flags_shortcode( $atts, $content = '' ) {
-	$atts = shortcode_atts(
-		[
-			'flag'  => '',     // slug; empty → default
-			'class' => '',     // extra class(es) appended to the wrapper
-			'size'  => '',     // optional height in px (e.g. "48")
-			'label' => '',     // override alt/title text; defaults to flag label
-		],
-		$atts,
-		'pride'
-	);
-
-	$registry = pride_flags_registry();
-
-	// Resolve the requested slug, falling back to the default flag.
-	$slug = sanitize_key( $atts['flag'] );
-	if ( '' === $slug || ! isset( $registry[ $slug ] ) ) {
-		$slug = pride_flags_default_slug();
-	}
-
-	// If even the default is missing (registry filtered oddly), bail safely.
-	if ( ! isset( $registry[ $slug ] ) ) {
-		return '';
-	}
-
-	$flag = $registry[ $slug ];
-	$src  = pride_flags_image_url( $flag );
+function pride_flags_render_img( $slug, array $flag, $size = 0, array $extra_classes = [], $label = '' ) {
+	$src = pride_flags_image_url( $flag );
 	if ( '' === $src ) {
 		return '';
 	}
 
-	// Make sure the front-end style is on the page.
-	if ( ! is_admin() ) {
-		wp_enqueue_style( 'pride-flags' );
+	if ( '' === $label ) {
+		$label = $flag['label'] . ' pride flag';
 	}
 
-	$label = '' !== $atts['label'] ? $atts['label'] : ( $flag['label'] . ' pride flag' );
+	$classes = array_merge( [ 'pride-flag', 'pride-flag--' . $slug ], $extra_classes );
 
-	// Wrapper classes: base + slug modifier + caller-supplied classes.
-	$classes = [ 'pride-flag', 'pride-flag--' . $slug ];
-	if ( '' !== trim( $atts['class'] ) ) {
-		foreach ( preg_split( '/\s+/', trim( $atts['class'] ) ) as $c ) {
-			$classes[] = sanitize_html_class( $c );
-		}
-	}
-
-	// Optional explicit height.
 	$style = '';
-	$size  = (int) $atts['size'];
 	if ( $size > 0 ) {
 		$style = sprintf( ' style="height:%dpx;width:auto;"', $size );
 	}
@@ -83,6 +52,82 @@ function pride_flags_shortcode( $atts, $content = '' ) {
 		esc_attr( $label ),
 		esc_attr( implode( ' ', array_filter( $classes ) ) ),
 		$style
+	);
+}
+
+/**
+ * Render one or more flags from the [pride] shortcode.
+ *
+ * @param array  $atts    Shortcode attributes.
+ * @param string $content Unused.
+ * @return string HTML.
+ */
+function pride_flags_shortcode( $atts, $content = '' ) {
+	$atts = shortcode_atts(
+		[
+			'flag'  => '',     // one slug, or comma-separated slugs; empty → default
+			'class' => '',     // extra class(es) on the img (single) or wrapper (collection)
+			'size'  => '',     // optional height in px (e.g. "48")
+			'label' => '',     // override alt/title (single flag only); defaults to flag label
+		],
+		$atts,
+		'pride'
+	);
+
+	$registry = pride_flags_registry();
+
+	// Parse the flag attribute into a clean, validated, ordered slug list.
+	$requested = array_filter( array_map( 'sanitize_key', array_map( 'trim', explode( ',', $atts['flag'] ) ) ) );
+	$slugs     = array_values( array_filter( $requested, function ( $s ) use ( $registry ) {
+		return isset( $registry[ $s ] );
+	} ) );
+
+	// Nothing valid requested → fall back to the default flag.
+	if ( empty( $slugs ) ) {
+		$default = pride_flags_default_slug();
+		if ( isset( $registry[ $default ] ) ) {
+			$slugs = [ $default ];
+		}
+	}
+	if ( empty( $slugs ) ) {
+		return '';
+	}
+
+	if ( ! is_admin() ) {
+		wp_enqueue_style( 'pride-flags' );
+	}
+
+	$size = (int) $atts['size'];
+
+	// Normalize caller-supplied classes.
+	$extra = [];
+	if ( '' !== trim( $atts['class'] ) ) {
+		foreach ( preg_split( '/\s+/', trim( $atts['class'] ) ) as $c ) {
+			$cc = sanitize_html_class( $c );
+			if ( '' !== $cc ) {
+				$extra[] = $cc;
+			}
+		}
+	}
+
+	// Single flag → return the bare <img> (classes + label apply to it).
+	if ( count( $slugs ) === 1 ) {
+		$slug  = $slugs[0];
+		$label = '' !== $atts['label'] ? $atts['label'] : '';
+		return pride_flags_render_img( $slug, $registry[ $slug ], $size, $extra, $label );
+	}
+
+	// Collection → wrap the imgs in a group span; caller classes go on the wrapper.
+	$imgs = '';
+	foreach ( $slugs as $slug ) {
+		$imgs .= pride_flags_render_img( $slug, $registry[ $slug ], $size );
+	}
+
+	$wrap_classes = array_merge( [ 'pride-flags' ], $extra );
+	return sprintf(
+		'<span class="%s">%s</span>',
+		esc_attr( implode( ' ', $wrap_classes ) ),
+		$imgs
 	);
 }
 add_shortcode( 'pride', 'pride_flags_shortcode' );

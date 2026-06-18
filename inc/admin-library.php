@@ -66,6 +66,25 @@ function pride_flags_render_library_page() {
 			<code>[pride flag=&quot;nonbinary&quot; class=&quot;my-class&quot; size=&quot;48&quot;]</code>
 		</p>
 
+		<div class="pride-flags-builder" id="pride-flags-builder">
+			<h2 class="pride-flags-builder__title"><?php esc_html_e( 'Build a collection', 'pride-flags' ); ?></h2>
+			<p class="pride-flags-builder__help">
+				<?php esc_html_e( 'Click "Add" on any flag below to stack it here, then copy one shortcode that renders them all in a row. Click a chip to remove it.', 'pride-flags' ); ?>
+			</p>
+			<div class="pride-flags-builder__chips" id="pride-flags-builder-chips" aria-live="polite">
+				<span class="pride-flags-builder__empty" id="pride-flags-builder-empty"><?php esc_html_e( 'No flags added yet.', 'pride-flags' ); ?></span>
+			</div>
+			<div class="pride-flags-builder__output">
+				<code class="pride-flags-code" id="pride-flags-builder-code">[pride flag=&quot;&quot;]</code>
+				<button type="button" class="button button-primary pride-flags-builder-copy" id="pride-flags-builder-copy" disabled>
+					<?php esc_html_e( 'Copy collection', 'pride-flags' ); ?>
+				</button>
+				<button type="button" class="button pride-flags-builder-clear" id="pride-flags-builder-clear" disabled>
+					<?php esc_html_e( 'Clear', 'pride-flags' ); ?>
+				</button>
+			</div>
+		</div>
+
 		<p class="pride-flags-search">
 			<label class="screen-reader-text" for="pride-flags-search"><?php esc_html_e( 'Search flags', 'pride-flags' ); ?></label>
 			<input type="search" id="pride-flags-search" class="regular-text"
@@ -79,7 +98,10 @@ function pride_flags_render_library_page() {
 				$is_default = ( $slug === $default );
 				$search    = strtolower( $flag['label'] . ' ' . $slug );
 				?>
-				<div class="pride-flags-card" data-search="<?php echo esc_attr( $search ); ?>">
+				<div class="pride-flags-card" data-search="<?php echo esc_attr( $search ); ?>"
+					data-slug="<?php echo esc_attr( $slug ); ?>"
+					data-label="<?php echo esc_attr( $flag['label'] ); ?>"
+					data-img="<?php echo esc_url( $src ); ?>">
 					<div class="pride-flags-card__media">
 						<?php if ( $src ) : ?>
 							<img src="<?php echo esc_url( $src ); ?>" alt="<?php echo esc_attr( $flag['label'] . ' pride flag' ); ?>">
@@ -101,6 +123,9 @@ function pride_flags_render_library_page() {
 								data-clipboard="<?php echo esc_attr( $shortcode ); ?>">
 								<?php esc_html_e( 'Copy', 'pride-flags' ); ?>
 							</button>
+							<button type="button" class="button button-small pride-flags-add" data-slug="<?php echo esc_attr( $slug ); ?>">
+								<?php esc_html_e( '+ Add', 'pride-flags' ); ?>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -121,12 +146,55 @@ function pride_flags_admin_inline_js() {
 	?>
 	<script>
 	( function () {
-		var search = document.getElementById( 'pride-flags-search' );
-		var grid   = document.getElementById( 'pride-flags-grid' );
-		var none   = document.getElementById( 'pride-flags-noresults' );
+		var COPIED = '<?php echo esc_js( __( 'Copied!', 'pride-flags' ) ); ?>';
+		var ADDED  = '<?php echo esc_js( __( 'Added', 'pride-flags' ) ); ?>';
+		var ADD    = '<?php echo esc_js( __( '+ Add', 'pride-flags' ) ); ?>';
+
+		var grid = document.getElementById( 'pride-flags-grid' );
 		if ( ! grid ) { return; }
 		var cards = Array.prototype.slice.call( grid.querySelectorAll( '.pride-flags-card' ) );
 
+		/* ── Map slug → { label, img } for chip rendering ── */
+		var FLAGS = {};
+		cards.forEach( function ( card ) {
+			FLAGS[ card.getAttribute( 'data-slug' ) ] = {
+				label: card.getAttribute( 'data-label' ),
+				img:   card.getAttribute( 'data-img' )
+			};
+		} );
+
+		/* ── Clipboard helper ── */
+		function copyText( text, done ) {
+			if ( navigator.clipboard && navigator.clipboard.writeText ) {
+				navigator.clipboard.writeText( text ).then( done, function () { fallbackCopy( text, done ); } );
+			} else {
+				fallbackCopy( text, done );
+			}
+		}
+		function fallbackCopy( text, done ) {
+			var ta = document.createElement( 'textarea' );
+			ta.value = text;
+			ta.setAttribute( 'readonly', '' );
+			ta.style.position = 'absolute';
+			ta.style.left = '-9999px';
+			document.body.appendChild( ta );
+			ta.select();
+			try { document.execCommand( 'copy' ); done(); } catch ( err ) {}
+			document.body.removeChild( ta );
+		}
+		function flash( btn, msg ) {
+			var orig = btn.textContent;
+			btn.textContent = msg;
+			btn.classList.add( 'pride-flags-copy--done' );
+			setTimeout( function () {
+				btn.textContent = orig;
+				btn.classList.remove( 'pride-flags-copy--done' );
+			}, 1500 );
+		}
+
+		/* ── Live search ── */
+		var search = document.getElementById( 'pride-flags-search' );
+		var none   = document.getElementById( 'pride-flags-noresults' );
 		if ( search ) {
 			search.addEventListener( 'input', function () {
 				var q = this.value.trim().toLowerCase();
@@ -140,36 +208,101 @@ function pride_flags_admin_inline_js() {
 			} );
 		}
 
+		/* ── Collection builder ── */
+		var collection = [];
+		var chipsBox = document.getElementById( 'pride-flags-builder-chips' );
+		var emptyMsg = document.getElementById( 'pride-flags-builder-empty' );
+		var codeEl   = document.getElementById( 'pride-flags-builder-code' );
+		var copyBtn  = document.getElementById( 'pride-flags-builder-copy' );
+		var clearBtn = document.getElementById( 'pride-flags-builder-clear' );
+
+		function buildShortcode() {
+			return '[pride flag="' + collection.join( ',' ) + '"]';
+		}
+
+		function syncAddButtons() {
+			cards.forEach( function ( card ) {
+				var btn = card.querySelector( '.pride-flags-add' );
+				if ( ! btn ) { return; }
+				var inSet = collection.indexOf( card.getAttribute( 'data-slug' ) ) !== -1;
+				btn.disabled = inSet;
+				btn.textContent = inSet ? ADDED : ADD;
+			} );
+		}
+
+		function renderBuilder() {
+			// Chips
+			chipsBox.querySelectorAll( '.pride-flags-chip' ).forEach( function ( c ) { c.remove(); } );
+			collection.forEach( function ( slug ) {
+				var f = FLAGS[ slug ] || { label: slug, img: '' };
+				var chip = document.createElement( 'button' );
+				chip.type = 'button';
+				chip.className = 'pride-flags-chip';
+				chip.setAttribute( 'data-slug', slug );
+				chip.title = 'Remove ' + f.label;
+				chip.innerHTML =
+					( f.img ? '<img src="' + f.img + '" alt="">' : '' ) +
+					'<span>' + f.label + '</span><span class="pride-flags-chip__x" aria-hidden="true">&times;</span>';
+				chipsBox.appendChild( chip );
+			} );
+			if ( emptyMsg ) { emptyMsg.style.display = collection.length ? 'none' : ''; }
+
+			// Output + button state
+			var has = collection.length > 0;
+			codeEl.textContent = has ? buildShortcode() : '[pride flag=""]';
+			copyBtn.disabled = ! has;
+			clearBtn.disabled = ! has;
+
+			syncAddButtons();
+		}
+
+		function add( slug ) {
+			if ( ! slug || ! FLAGS[ slug ] ) { return; }
+			if ( collection.indexOf( slug ) === -1 ) {
+				collection.push( slug );
+				renderBuilder();
+			}
+		}
+		function remove( slug ) {
+			var i = collection.indexOf( slug );
+			if ( i !== -1 ) {
+				collection.splice( i, 1 );
+				renderBuilder();
+			}
+		}
+
+		// Add (from cards) + single-copy (from cards)
 		grid.addEventListener( 'click', function ( e ) {
-			var btn = e.target.closest ? e.target.closest( '.pride-flags-copy' ) : null;
-			if ( ! btn ) { return; }
-			var text = btn.getAttribute( 'data-clipboard' );
-			var done = function () {
-				var label = btn.textContent;
-				btn.textContent = '<?php echo esc_js( __( 'Copied!', 'pride-flags' ) ); ?>';
-				btn.classList.add( 'pride-flags-copy--done' );
-				setTimeout( function () {
-					btn.textContent = label;
-					btn.classList.remove( 'pride-flags-copy--done' );
-				}, 1500 );
-			};
-			if ( navigator.clipboard && navigator.clipboard.writeText ) {
-				navigator.clipboard.writeText( text ).then( done, function () { fallbackCopy( text, done ); } );
-			} else {
-				fallbackCopy( text, done );
+			var addBtn = e.target.closest ? e.target.closest( '.pride-flags-add' ) : null;
+			if ( addBtn ) {
+				add( addBtn.closest( '.pride-flags-card' ).getAttribute( 'data-slug' ) );
+				return;
+			}
+			var copyBtnCard = e.target.closest ? e.target.closest( '.pride-flags-copy' ) : null;
+			if ( copyBtnCard ) {
+				copyText( copyBtnCard.getAttribute( 'data-clipboard' ), function () { flash( copyBtnCard, COPIED ); } );
 			}
 		} );
 
-		function fallbackCopy( text, done ) {
-			var ta = document.createElement( 'textarea' );
-			ta.value = text;
-			ta.setAttribute( 'readonly', '' );
-			ta.style.position = 'absolute';
-			ta.style.left = '-9999px';
-			document.body.appendChild( ta );
-			ta.select();
-			try { document.execCommand( 'copy' ); done(); } catch ( err ) {}
-			document.body.removeChild( ta );
+		// Remove (click a chip)
+		if ( chipsBox ) {
+			chipsBox.addEventListener( 'click', function ( e ) {
+				var chip = e.target.closest ? e.target.closest( '.pride-flags-chip' ) : null;
+				if ( chip ) { remove( chip.getAttribute( 'data-slug' ) ); }
+			} );
+		}
+
+		if ( copyBtn ) {
+			copyBtn.addEventListener( 'click', function () {
+				if ( ! collection.length ) { return; }
+				copyText( buildShortcode(), function () { flash( copyBtn, COPIED ); } );
+			} );
+		}
+		if ( clearBtn ) {
+			clearBtn.addEventListener( 'click', function () {
+				collection = [];
+				renderBuilder();
+			} );
 		}
 	} )();
 	</script>

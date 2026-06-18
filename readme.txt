@@ -15,18 +15,24 @@ Pride Flags adds a single, easy shortcode for dropping pride and identity flags 
 
     [pride flag="trans"]
 
-With no flag — or an unrecognized one — it renders the Progress Pride flag, so the shortcode never comes up empty.
+With no flag, or an unrecognized one, it renders the Progress Pride flag, so the shortcode never comes up empty.
+
+You can also render a collection by passing several slugs, comma-separated:
+
+    [pride flag="trans,nonbinary,bi"]
 
 **Attributes**
 
-* `flag` — the flag slug (e.g. `trans`, `nonbinary`, `bi`). Defaults to `progress-pride`.
-* `class` — extra CSS class(es) appended to the rendered flag.
+* `flag` — one flag slug, or a comma-separated list for a collection (e.g. `trans`, or `trans,nonbinary,bi`). Defaults to `progress-pride`.
+* `class` — extra CSS class(es). Applied to the flag (single) or the wrapping row (collection).
 * `size` — optional rendered height in pixels (e.g. `48`).
-* `label` — override the alt/title text (defaults to "{Flag} pride flag").
+* `label` — override the alt/title text on a single flag (defaults to "{Flag} pride flag").
 
-**Library**
+**Library + collection builder**
 
 A **Pride Flags** page in the WordPress dashboard lists every flag with its name, slug, description, and a one-click "Copy" button for the matching shortcode. Searchable by name or slug.
+
+The same page has a **collection builder**: click "Add" on any flags to stack them, then copy a single `[pride flag="…"]` shortcode that renders the whole set in a row.
 
 **Extending**
 
@@ -50,7 +56,8 @@ Flag artwork is bundled with the plugin (ported from the Violet Index identity-f
 = 1.0.0 - 2026-06-18 =
 * Initial build.
 * `[pride flag="…"]` shortcode with `class`, `size`, and `label` attributes; defaults to Progress Pride.
+* Collections: `flag` accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
 * 26 bundled flags (Progress Pride, Trans, and the full Violet Index identity-flag set).
-* Searchable dashboard library with copy-to-clipboard shortcodes.
+* Searchable dashboard library with copy-to-clipboard shortcodes and a point-and-click collection builder.
 * Filterable registry (`pride_flags_registry`, `pride_flags_default_slug`).
 * GitHub updates via Plugin Update Checker.

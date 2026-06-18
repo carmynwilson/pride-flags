@@ -45,146 +45,146 @@ function pride_flags_registry() {
 		'progress-pride' => [
 			'label' => 'Progress Pride',
 			'file'  => 'progress-pride.svg',
-			'desc'  => 'Daniel Quasar\'s 2018 redesign of the rainbow flag, adding a forward-pointing chevron of black, brown, and trans-flag stripes to center trans people and queer people of color.',
+			'desc'  => 'Daniel Quasar\'s 2018 update to the rainbow flag. An arrow of black, brown, pink, light blue, and white pushes in from the left, pulling trans people and queer people of color to the front.',
 		],
 		'rainbow' => [
 			'label' => 'Classic Rainbow',
 			'file'  => 'rainbow.svg',
-			'desc'  => 'The widely-recognized six-stripe rainbow pride flag representing the LGBTQIA+ community as a whole.',
+			'desc'  => 'The six-stripe rainbow most people picture when they hear "pride flag." It stands for the whole LGBTQIA+ community.',
 		],
 		'baker' => [
 			'label' => 'Baker (1978 Original)',
 			'file'  => 'baker.svg',
-			'desc'  => 'Gilbert Baker\'s original 1978 eight-stripe pride flag, including the hot pink and turquoise stripes later dropped from the common version.',
+			'desc'  => 'Gilbert Baker\'s original 1978 design, the one that started it all. It ran eight stripes, including the hot pink and turquoise that got cut when the flag went into mass production.',
 		],
 		'philly-pride' => [
 			'label' => 'Philadelphia Pride',
 			'file'  => 'philly-pride.svg',
-			'desc'  => 'The 2017 "More Color More Pride" flag from Philadelphia, adding black and brown stripes to honor queer people of color.',
+			'desc'  => 'Philadelphia\'s 2017 "More Color More Pride" flag. It puts black and brown stripes on top of the rainbow to make room for queer people of color.',
 		],
 		'two-spirit-rainbow' => [
 			'label' => 'Two-Spirit (Rainbow)',
 			'file'  => 'two-spirit-rainbow.jpg',
-			'desc'  => 'A flag for Two-Spirit people, an umbrella term used by some Indigenous North American cultures for people who hold both masculine and feminine spirits.',
+			'desc'  => 'Two-Spirit is a term some Indigenous North American communities use for people who carry both a masculine and feminine spirit. This version pairs that meaning with the rainbow.',
 		],
 		'two-spirit-trans' => [
 			'label' => 'Two-Spirit (Trans)',
 			'file'  => 'two-spirit-trans.webp',
-			'desc'  => 'A Two-Spirit variant incorporating the trans pride colors.',
+			'desc'  => 'The same Two-Spirit meaning, here carried on the trans pride colors.',
 		],
 		'queer-people-of-color' => [
 			'label' => 'Queer People of Color',
 			'file'  => 'queer-people-of-color.jpg',
-			'desc'  => 'A flag overlaying the rainbow with a raised fist, representing solidarity between the LGBTQIA+ community and people of color.',
+			'desc'  => 'A flag for queer people of color, naming the place where being LGBTQIA+ and being a person of color meet.',
 		],
 
 		// ── Trans family ──────────────────────────────────────────
 		'trans' => [
 			'label' => 'Trans',
 			'file'  => 'trans.svg',
-			'desc'  => 'Monica Helms\'s 1999 transgender pride flag — light blue, pink, and white stripes representing trans men, trans women, and nonbinary or transitioning people.',
+			'desc'  => 'Monica Helms made this in 1999. The blue and pink come from the old baby-color convention and the white in the middle is for nonbinary and transitioning people. It reads the same flipped either way, which was the whole idea.',
 		],
 		'trans-femme' => [
 			'label' => 'Trans Femme',
 			'file'  => 'trans-femme.svg',
-			'desc'  => 'A flag representing transfeminine identity.',
+			'desc'  => 'A flag for transfeminine people.',
 		],
 		'trans-masc' => [
 			'label' => 'Trans Masc',
 			'file'  => 'trans-masc.svg',
-			'desc'  => 'A flag representing transmasculine identity.',
+			'desc'  => 'A flag for transmasculine people.',
 		],
 
 		// ── Nonbinary / agender family ────────────────────────────
 		'nonbinary' => [
 			'label' => 'Nonbinary',
 			'file'  => 'nonbinary.svg',
-			'desc'  => 'Kye Rowan\'s 2014 nonbinary pride flag — yellow, white, purple, and black stripes for genders outside the binary.',
+			'desc'  => 'Kye Rowan made this in 2014 for people whose gender sits outside the binary. Yellow is for genders apart from male and female, white for many or all genders, purple for a blend, and black for having none.',
 		],
 		'genderqueer' => [
 			'label' => 'Genderqueer',
 			'file'  => 'genderqueer.svg',
-			'desc'  => 'A flag for genderqueer identity — lavender, white, and green stripes.',
+			'desc'  => 'A flag for genderqueer people, whose identities land between or beyond "man" and "woman." Lavender mixes blue and pink, white is for agender, and green is for everything off the binary.',
 		],
 		'genderfluid' => [
 			'label' => 'Genderfluid',
 			'file'  => 'genderfluid.svg',
-			'desc'  => 'A flag for people whose gender shifts or fluctuates over time.',
+			'desc'  => 'A flag for people whose gender moves and shifts over time instead of holding still.',
 		],
 		'agender' => [
 			'label' => 'Agender',
 			'file'  => 'agender.svg',
-			'desc'  => 'A flag for people who identify as having no gender or being gender-neutral.',
+			'desc'  => 'A flag for people who have no gender or feel gender-neutral. The green stripe is the deliberate opposite of the gendered pink and blue.',
 		],
 
 		// ── Intersex ──────────────────────────────────────────────
 		'intersex' => [
 			'label' => 'Intersex',
 			'file'  => 'intersex.svg',
-			'desc'  => 'Morgan Carpenter\'s 2013 intersex pride flag — a purple circle on a yellow field, deliberately free of gendered colors.',
+			'desc'  => 'Morgan Carpenter designed this in 2013: a purple ring on a yellow field. The colors steer clear of pink and blue on purpose, and the unbroken circle is about being whole as you are.',
 		],
 
 		// ── Attraction ────────────────────────────────────────────
 		'lesbian' => [
 			'label' => 'Lesbian',
 			'file'  => 'lesbian.svg',
-			'desc'  => 'The community lesbian pride flag in shades of orange, white, and pink.',
+			'desc'  => 'The orange-and-pink lesbian flag, Emily Gwen\'s 2018 design. The shades run from independence and community through to love and femininity.',
 		],
 		'bi' => [
 			'label' => 'Bisexual',
 			'file'  => 'bi.svg',
-			'desc'  => 'Michael Page\'s 1998 bisexual pride flag — pink, purple, and blue stripes.',
+			'desc'  => 'Michael Page made this in 1998. Pink is attraction to the same gender, blue to a different one, and the purple where they overlap is for both at once.',
 		],
 		'pan' => [
 			'label' => 'Pansexual',
 			'file'  => 'pan.svg',
-			'desc'  => 'The pansexual pride flag — pink, yellow, and blue stripes, for attraction regardless of gender.',
+			'desc'  => 'The pansexual flag, for attraction to people of any gender. Pink, yellow, and blue cover women, everyone else, and men.',
 		],
 		'polysexual' => [
 			'label' => 'Polysexual',
 			'file'  => 'polysexual.svg',
-			'desc'  => 'A flag for polysexual people — those attracted to multiple, but not necessarily all, genders.',
+			'desc'  => 'A flag for polysexual people, who are drawn to many genders but not necessarily all of them.',
 		],
 
 		// ── Ace / aro spectrum ────────────────────────────────────
 		'ace' => [
 			'label' => 'Asexual',
 			'file'  => 'ace.svg',
-			'desc'  => 'The asexual pride flag — black, grey, white, and purple stripes for the asexual spectrum.',
+			'desc'  => 'The asexual flag. Black is for asexuality, gray for the space in between, white for allies, and purple for the community.',
 		],
 		'demisexual' => [
 			'label' => 'Demisexual',
 			'file'  => 'demisexual.svg',
-			'desc'  => 'A flag for demisexual people, who experience sexual attraction only after forming a strong emotional bond.',
+			'desc'  => 'A flag for demisexual people, who feel sexual attraction only once a real emotional connection is there.',
 		],
 		'aro' => [
 			'label' => 'Aromantic',
 			'file'  => 'aro.svg',
-			'desc'  => 'The aromantic pride flag — green, light green, white, grey, and black stripes for the aromantic spectrum.',
+			'desc'  => 'Cameron Whimsy\'s 2014 aromantic flag, for people who feel little or no romantic attraction. The greens stand for aromanticism and its spectrum.',
 		],
 		'demiromantic' => [
 			'label' => 'Demiromantic',
 			'file'  => 'demiromantic.svg',
-			'desc'  => 'A flag for demiromantic people, who experience romantic attraction only after forming a strong emotional bond.',
+			'desc'  => 'A flag for demiromantic people, who feel romantic attraction only after an emotional bond has formed.',
 		],
 		'aroace' => [
 			'label' => 'Aroace',
 			'file'  => 'aroace.svg',
-			'desc'  => 'A flag for people who are both aromantic and asexual.',
+			'desc'  => 'A flag for people who are both aromantic and asexual, blending the colors of each.',
 		],
 
 		// ── Relationship structure ────────────────────────────────
 		'polyamorous' => [
 			'label' => 'Polyamorous',
 			'file'  => 'polyamorous.svg',
-			'desc'  => 'A flag representing polyamory and consensual non-monogamy.',
+			'desc'  => 'A flag for polyamory and ethical non-monogamy: loving more than one person at a time, openly and by agreement.',
 		],
 
-		// ── Allyship (a stance, not an identity — kept at the end) ─
+		// ── Allyship (a stance, not an identity, kept at the end) ──
 		'ally' => [
 			'label' => 'Ally',
 			'file'  => 'ally.svg',
-			'desc'  => 'A flag for straight and cisgender allies of the LGBTQIA+ community — a rainbow chevron on black-and-white stripes.',
+			'desc'  => 'A flag for straight and cisgender allies. The black-and-white stripes are theirs, and the rainbow chevron is the community they show up for.',
 		],
 	];
 
