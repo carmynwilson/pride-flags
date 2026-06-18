@@ -57,7 +57,6 @@ Flag artwork is bundled with the plugin (ported from the Violet Index identity-f
 * Collections: the `flag` attribute now accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
 * Added a point-and-click collection builder to the dashboard library: add flags, see chips, copy one combined shortcode.
 * `size` now accepts any CSS unit (`2rem`, `1.5em`, `50%`, `3vh`); a bare number still means pixels.
-* Reworded all flag descriptions for a more human voice, grounded against public pride-flag references.
 
 = 1.0.0 - 2026-06-18 =
 * Initial build.
