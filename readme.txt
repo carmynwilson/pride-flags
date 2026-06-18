@@ -26,7 +26,9 @@ You can also render a collection by passing several slugs, comma-separated:
 * `flag` — one flag slug, or a comma-separated list for a collection (e.g. `trans`, or `trans,nonbinary,bi`). Defaults to `progress-pride`.
 * `class` — extra CSS class(es). Applied to the flag (single) or the wrapping row (collection).
 * `size` — optional rendered height. A bare number is treated as pixels (`48`), or pass any CSS unit (`2rem`, `1.5em`, `50%`, `3vh`).
-* `label` — override the alt/title text on a single flag (defaults to "{Flag} pride flag").
+* `label` — override the alt text on a single flag (defaults to "{Flag} pride flag").
+* `tooltip` — hover/focus tooltip text. Defaults to the flag name; pass your own text for a single flag, or `tooltip="false"` to turn it off.
+* `align` — `left`, `center`, or `right` to align the flag (or collection) on its own line. Omit for inline flow with surrounding text.
 
 **Library + collection builder**
 
@@ -57,6 +59,9 @@ Flag artwork is bundled with the plugin (ported from the Violet Index identity-f
 * Collections: the `flag` attribute now accepts a comma-separated list (e.g. `trans,nonbinary,bi`) to render a row of flags.
 * Added a point-and-click collection builder to the dashboard library: add flags, see chips, copy one combined shortcode.
 * `size` now accepts any CSS unit (`2rem`, `1.5em`, `50%`, `3vh`); a bare number still means pixels.
+* Tooltips: flags now show a styled hover/focus tooltip with the flag name by default. Customize with `tooltip="…"` or disable with `tooltip="false"`.
+* New `align` attribute (`left`/`center`/`right`) to place a flag or collection on its own line.
+* A touch more spacing between flags in a collection.
 
 = 1.0.0 - 2026-06-18 =
 * Initial build.

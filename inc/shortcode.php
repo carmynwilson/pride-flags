@@ -9,6 +9,8 @@
  *   [pride flag="nonbinary" class="big"]    → extra CSS class
  *   [pride flag="bi" size="48"]             → set height (bare number = px)
  *   [pride flag="bi" size="2rem"]           → height in any CSS unit (rem/em/%/vh…)
+ *   [pride flag="bi" tooltip="Bi pride!"]   → custom tooltip (tooltip="false" = off)
+ *   [pride flag="bi" align="center"]        → center on its own line
  *
  * The flag attribute takes one slug or a comma-separated list. Unknown
  * slugs are dropped; if nothing valid is left, it falls back to the
@@ -46,24 +48,27 @@ function pride_flags_sanitize_size( $raw ) {
 }
 
 /**
- * Render a single <img> for one flag.
+ * Render a single flag.
+ *
+ * When $tip is non-empty the <img> is wrapped in a tooltip span and the
+ * native title attribute is dropped (so the browser's own tooltip and
+ * our styled one don't both appear). The img always keeps its alt text.
  *
  * @param string $slug          Flag slug.
  * @param array  $flag          Registry entry.
  * @param string $height        CSS height value (e.g. "48px", "2rem"); '' = CSS default.
  * @param array  $extra_classes Extra CSS classes for the img.
- * @param string $label         alt/title override (empty = "{Label} pride flag").
+ * @param string $label         alt-text override (empty = "{Label} pride flag").
+ * @param string $tip           Tooltip text; '' = no tooltip.
  * @return string HTML, or '' if the image can't be resolved.
  */
-function pride_flags_render_img( $slug, array $flag, $height = '', array $extra_classes = [], $label = '' ) {
+function pride_flags_render_img( $slug, array $flag, $height = '', array $extra_classes = [], $label = '', $tip = '' ) {
 	$src = pride_flags_image_url( $flag );
 	if ( '' === $src ) {
 		return '';
 	}
 
-	if ( '' === $label ) {
-		$label = $flag['label'] . ' pride flag';
-	}
+	$alt = '' !== $label ? $label : $flag['label'] . ' pride flag';
 
 	$classes = array_merge( [ 'pride-flag', 'pride-flag--' . $slug ], $extra_classes );
 
@@ -72,13 +77,26 @@ function pride_flags_render_img( $slug, array $flag, $height = '', array $extra_
 		$style = sprintf( ' style="height:%s;width:auto;"', esc_attr( $height ) );
 	}
 
-	return sprintf(
-		'<img src="%s" alt="%s" title="%s" class="%s"%s loading="lazy" decoding="async" />',
+	$has_tip    = ( '' !== $tip );
+	$title_attr = $has_tip ? '' : sprintf( ' title="%s"', esc_attr( $alt ) );
+
+	$img = sprintf(
+		'<img src="%s" alt="%s"%s class="%s"%s loading="lazy" decoding="async" />',
 		esc_url( $src ),
-		esc_attr( $label ),
-		esc_attr( $label ),
+		esc_attr( $alt ),
+		$title_attr,
 		esc_attr( implode( ' ', array_filter( $classes ) ) ),
 		$style
+	);
+
+	if ( ! $has_tip ) {
+		return $img;
+	}
+
+	return sprintf(
+		'<span class="pride-flag-tip" data-pride-tip="%s" tabindex="0">%s</span>',
+		esc_attr( $tip ),
+		$img
 	);
 }
 
@@ -92,10 +110,12 @@ function pride_flags_render_img( $slug, array $flag, $height = '', array $extra_
 function pride_flags_shortcode( $atts, $content = '' ) {
 	$atts = shortcode_atts(
 		[
-			'flag'  => '',     // one slug, or comma-separated slugs; empty → default
-			'class' => '',     // extra class(es) on the img (single) or wrapper (collection)
-			'size'  => '',     // optional height in px (e.g. "48")
-			'label' => '',     // override alt/title (single flag only); defaults to flag label
+			'flag'    => '',   // one slug, or comma-separated slugs; empty → default
+			'class'   => '',   // extra class(es) on the img (single) or wrapper (collection)
+			'size'    => '',   // optional height: bare number = px, or any CSS unit (2rem/50%)
+			'label'   => '',   // override alt text (single flag only); defaults to flag label
+			'tooltip' => '',   // tooltip text; empty = flag name; "false"/"no"/"off" = none
+			'align'   => '',   // left | center | right; anything else = inline default
 		],
 		$atts,
 		'pride'
@@ -137,24 +157,40 @@ function pride_flags_shortcode( $atts, $content = '' ) {
 		}
 	}
 
-	// Single flag → return the bare <img> (classes + label apply to it).
+	// Tooltip mode. Empty → use the flag name; a disable keyword → off;
+	// anything else → that literal text (single flag only).
+	$tip_raw      = trim( $atts['tooltip'] );
+	$tooltips_off = in_array( strtolower( $tip_raw ), [ 'false', 'no', 'off', '0', 'none' ], true );
+
+	// Build the flag markup (single img/tip-span, or a collection wrapper).
 	if ( count( $slugs ) === 1 ) {
 		$slug  = $slugs[0];
 		$label = '' !== $atts['label'] ? $atts['label'] : '';
-		return pride_flags_render_img( $slug, $registry[ $slug ], $height, $extra, $label );
+		$tip   = '';
+		if ( ! $tooltips_off ) {
+			$tip = '' !== $tip_raw ? $tip_raw : $registry[ $slug ]['label'];
+		}
+		$out = pride_flags_render_img( $slug, $registry[ $slug ], $height, $extra, $label, $tip );
+	} else {
+		$imgs = '';
+		foreach ( $slugs as $slug ) {
+			$tip   = $tooltips_off ? '' : $registry[ $slug ]['label'];
+			$imgs .= pride_flags_render_img( $slug, $registry[ $slug ], $height, [], '', $tip );
+		}
+		$wrap_classes = array_merge( [ 'pride-flags' ], $extra );
+		$out          = sprintf( '<span class="%s">%s</span>', esc_attr( implode( ' ', $wrap_classes ) ), $imgs );
 	}
 
-	// Collection → wrap the imgs in a group span; caller classes go on the wrapper.
-	$imgs = '';
-	foreach ( $slugs as $slug ) {
-		$imgs .= pride_flags_render_img( $slug, $registry[ $slug ], $height );
+	// Optional alignment wrapper (block-level, aligns the inline flag/row).
+	$align = strtolower( trim( $atts['align'] ) );
+	if ( in_array( $align, [ 'left', 'center', 'right' ], true ) ) {
+		$out = sprintf(
+			'<span class="pride-flag-align pride-flag-align--%s">%s</span>',
+			esc_attr( $align ),
+			$out
+		);
 	}
 
-	$wrap_classes = array_merge( [ 'pride-flags' ], $extra );
-	return sprintf(
-		'<span class="%s">%s</span>',
-		esc_attr( implode( ' ', $wrap_classes ) ),
-		$imgs
-	);
+	return $out;
 }
 add_shortcode( 'pride', 'pride_flags_shortcode' );
