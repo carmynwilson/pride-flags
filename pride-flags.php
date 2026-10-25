@@ -8,7 +8,7 @@
  *
  * @wordpress-plugin
  * Plugin Name: Pride Flags
- * Version:     1.1.1
+ * Version:     1.1.2
  * Plugin URI:  https://carmyn.me/?pride-flags
  * Description: A simple [pride flag=""] shortcode that renders pride & identity flags. Defaults to the Progress Pride flag. Includes a built-in flag library reference in the dashboard.
  * Author:      Carmyn Wilson
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define constants
-define( 'PRIDE_FLAGS_VERSION', '1.1.1' );
+define( 'PRIDE_FLAGS_VERSION', '1.1.2' );
 define( 'PRIDE_FLAGS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PRIDE_FLAGS_URL', plugin_dir_url( __FILE__ ) );
 
@@ -49,18 +49,45 @@ function pride_flags_register_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'pride_flags_register_assets' );
 
-// Include Plugin Update Checker by YahnisElsts
+// Plugin updates from update.wizardofads.dev.
 require PRIDE_FLAGS_PATH . 'plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
+if ( ! function_exists( 'woa_updates_request' ) ) {
+	function woa_updates_request( $args, $url ) {
+		if ( 0 === strpos( $url, 'https://update.wizardofads.dev/' ) && is_array( $args['headers'] ?? array() ) ) {
+			$args['headers']['X-Update-Site-Title'] = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) );
+			$key = get_option( 'woa_update_key' );
+			if ( $key ) {
+				$args['headers']['X-Update-Key'] = $key;
+			} else {
+				$pair = get_option( 'woa_update_pair' );
+				if ( ! $pair ) {
+					$pair = wp_generate_password( 40, false, false );
+					update_option( 'woa_update_pair', $pair, false );
+				}
+				$args['headers']['X-Update-Pair'] = $pair;
+			}
+		}
+		return $args;
+	}
+	add_filter( 'http_request_args', 'woa_updates_request', 10, 2 );
+
+	function woa_updates_response( $response, $args, $url ) {
+		if ( 0 === strpos( $url, 'https://update.wizardofads.dev/' ) && ! is_wp_error( $response ) && ! get_option( 'woa_update_key' ) ) {
+			$key = wp_remote_retrieve_header( $response, 'x-update-key-issued' );
+			if ( is_string( $key ) && preg_match( '/^[a-z0-9][a-z0-9-]{0,62}\.[A-Za-z0-9_-]{43}$/', $key ) ) {
+				update_option( 'woa_update_key', $key, false );
+				delete_option( 'woa_update_pair' );
+			}
+		}
+		return $response;
+	}
+	add_filter( 'http_response', 'woa_updates_response', 10, 3 );
+}
+
 $prideFlagsUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://github.com/carmynwilson/pride-flags/',
+	'https://update.wizardofads.dev/v1/plugin/' . basename( __DIR__ ) . '/info.json',
 	__FILE__,
-	'pride-flags'
+	basename( __DIR__ )
 );
-
-// Set the branch that contains the stable release.
-$prideFlagsUpdateChecker->setBranch( 'main' );
-
-// The repo is public, so PUC needs no authentication. If it ever goes
-// private again, add: $prideFlagsUpdateChecker->setAuthentication( 'TOKEN' );
